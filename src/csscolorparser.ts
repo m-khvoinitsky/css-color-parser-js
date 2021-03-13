@@ -20,8 +20,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
+export type RGBA = [number, number, number, number]
+
 // http://www.w3.org/TR/css3-color/
-var kCSSColorTable = {
+export const kCSSColorTable: { [key: string]: RGBA } = {
   "transparent": [0,0,0,0], "aliceblue": [240,248,255,1],
   "antiquewhite": [250,235,215,1], "aqua": [0,255,255,1],
   "aquamarine": [127,255,212,1], "azure": [240,255,255,1],
@@ -98,28 +100,28 @@ var kCSSColorTable = {
   "white": [255,255,255,1], "whitesmoke": [245,245,245,1],
   "yellow": [255,255,0,1], "yellowgreen": [154,205,50,1]}
 
-function clamp_css_byte(i) {  // Clamp to integer 0 .. 255.
+function clamp_css_byte(i: number): number {  // Clamp to integer 0 .. 255.
   i = Math.round(i);  // Seems to be what Chrome does (vs truncation).
   return i < 0 ? 0 : i > 255 ? 255 : i;
 }
 
-function clamp_css_float(f) {  // Clamp to float 0.0 .. 1.0.
+function clamp_css_float(f: number): number {  // Clamp to float 0.0 .. 1.0.
   return f < 0 ? 0 : f > 1 ? 1 : f;
 }
 
-function parse_css_int(str) {  // int or percentage.
+function parse_css_int(str: string): number {  // int or percentage.
   if (str[str.length - 1] === '%')
     return clamp_css_byte(parseFloat(str) / 100 * 255);
   return clamp_css_byte(parseInt(str));
 }
 
-function parse_css_float(str) {  // float or percentage.
+function parse_css_float(str: string): number {  // float or percentage.
   if (str[str.length - 1] === '%')
     return clamp_css_float(parseFloat(str) / 100);
   return clamp_css_float(parseFloat(str));
 }
 
-function css_hue_to_rgb(m1, m2, h) {
+function css_hue_to_rgb(m1: number, m2: number, h: number): number {
   if (h < 0) h += 1;
   else if (h > 1) h -= 1;
 
@@ -129,12 +131,12 @@ function css_hue_to_rgb(m1, m2, h) {
   return m1;
 }
 
-function parseCSSColor(css_str) {
+export function parseCSSColor(css_str: string): RGBA | null {
   // Remove all whitespace, not compliant, but should just be more accepting.
   var str = css_str.replace(/ /g, '').toLowerCase();
 
   // Color keywords (and transparent) lookup.
-  if (str in kCSSColorTable) return kCSSColorTable[str].slice();  // dup.
+  if (str in kCSSColorTable) return kCSSColorTable[str].slice() as RGBA;  // dup.
 
   // #abc and #abc123 syntax.
   if (str[0] === '#') {
@@ -180,7 +182,7 @@ function parseCSSColor(css_str) {
     switch (fname) {
       case 'rgba':
         if (params.length !== 4) return null;
-        alpha = parse_css_float(params.pop());
+        alpha = parse_css_float(params.pop()!);
         // Fall through.
       case 'rgb':
         if (params.length !== 3) return null;
@@ -190,7 +192,7 @@ function parseCSSColor(css_str) {
                 alpha];
       case 'hsla':
         if (params.length !== 4) return null;
-        alpha = parse_css_float(params.pop());
+        alpha = parse_css_float(params.pop()!);
         // Fall through.
       case 'hsl':
         if (params.length !== 3) return null;
@@ -212,5 +214,3 @@ function parseCSSColor(css_str) {
 
   return null;
 }
-
-try { exports.parseCSSColor = parseCSSColor } catch(e) { }

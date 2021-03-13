@@ -1,12 +1,29 @@
 {
-  "name": "csscolorparser",
+  "name": "csscolorparser-ts",
   "version": "1.0.3",
   "author": "Dean McNamee <dean@gmail.com>",
-  "keywords": ["css", "color", "html5", "parser"],
+  "contributors": [
+    "Mikhail Khvoinitsky <me@khvoinitsky.org>",
+    "Iván Sánchez Ortega <ivan@mazemap.no>",
+    "Lou Huang <lou@louhuang.com>",
+    "Nick Robison <nickrobison@users.noreply.github.com>"
+  ],
+  "keywords": [
+    "css",
+    "color",
+    "html5",
+    "parser",
+    "ts",
+    "typescript"
+  ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/deanm/css-color-parser-js"
+    "url": "https://github.com/m-khvoinitsky/css-color-parser-ts"
   },
   "license": "MIT",
-  "main": "csscolorparser.js"
+  "main": "dist/csscolorparser.js",
+  "types": "dist/csscolorparser.d.ts",
+  "devDependencies": {
+    "typescript": "^4.2.3"
+  }
 }
