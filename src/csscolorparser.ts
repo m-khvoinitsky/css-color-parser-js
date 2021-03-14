@@ -98,7 +98,7 @@ export const kCSSColorTable: { [key: string]: RGBA } = {
   "tomato": [255,99,71,1], "turquoise": [64,224,208,1],
   "violet": [238,130,238,1], "wheat": [245,222,179,1],
   "white": [255,255,255,1], "whitesmoke": [245,245,245,1],
-  "yellow": [255,255,0,1], "yellowgreen": [154,205,50,1]}
+  "yellow": [255,255,0,1], "yellowgreen": [154,205,50,1]};
 
 function clamp_css_byte(i: number): number {  // Clamp to integer 0 .. 255.
   i = Math.round(i);  // Seems to be what Chrome does (vs truncation).
@@ -110,13 +110,13 @@ function clamp_css_float(f: number): number {  // Clamp to float 0.0 .. 1.0.
 }
 
 function parse_css_int(str: string): number {  // int or percentage.
-  if (str[str.length - 1] === '%')
+  if (str[str.length - 1] === "%")
     return clamp_css_byte(parseFloat(str) / 100 * 255);
   return clamp_css_byte(parseInt(str));
 }
 
 function parse_css_float(str: string): number {  // float or percentage.
-  if (str[str.length - 1] === '%')
+  if (str[str.length - 1] === "%")
     return clamp_css_float(parseFloat(str) / 100);
   return clamp_css_float(parseFloat(str));
 }
@@ -133,80 +133,101 @@ function css_hue_to_rgb(m1: number, m2: number, h: number): number {
 
 export function parseCSSColor(css_str: string): RGBA | null {
   // Remove all whitespace, not compliant, but should just be more accepting.
-  var str = css_str.replace(/ /g, '').toLowerCase();
+  const str = css_str.replace(/ /g, "").toLowerCase();
 
   // Color keywords (and transparent) lookup.
   if (str in kCSSColorTable) return kCSSColorTable[str].slice() as RGBA;  // dup.
 
   // #abc and #abc123 syntax.
-  if (str[0] === '#') {
-    var iv = parseInt(str.substr(1), 16);  // TODO(deanm): Stricter parsing.
+  if (str[0] === "#") {
+    const iv = parseInt(str.substr(1), 16);  // TODO(deanm): Stricter parsing.
     if (str.length === 4) {
       // #rgb
       if (!(iv >= 0 && iv <= 0xfff)) return null;  // Covers NaN.
-      return [((iv & 0xf00) >> 4) | ((iv & 0xf00) >> 8),
-               (iv & 0x0f0)       | ((iv & 0x0f0) >> 4),
-              ((iv & 0x00f) << 4) |  (iv & 0x00f),
-              1];
+      return [
+        /* eslint-disable indent */
+        ((iv & 0xf00) >> 4) | ((iv & 0xf00) >> 8),
+         (iv & 0x0f0)       | ((iv & 0x0f0) >> 4),
+        ((iv & 0x00f) << 4) |  (iv & 0x00f),
+        1,
+        /* eslint-enable indent */
+      ];
     } else if (str.length === 7) {
       // #rrggbb
       if (!(iv >= 0 && iv <= 0xffffff)) return null;  // Covers NaN.
-      return [(iv & 0xff0000) >> 16,
-              (iv & 0x00ff00) >> 8,
-               iv & 0x0000ff,
-              1];
+      return [
+        /* eslint-disable indent */
+        (iv & 0xff0000) >> 16,
+        (iv & 0x00ff00) >> 8,
+         iv & 0x0000ff,
+        1,
+        /* eslint-enable indent */
+      ];
     } else if (str.length === 5) {
       // #rgba
       if (!(iv >= 0 && iv <= 0xffff)) return null;  // Covers NaN.
-      return [((iv & 0xf000) >> 8) | ((iv & 0xf000) >> 12),
-              ((iv & 0x0f00) >> 4) | ((iv & 0x0f00) >> 8),
-               (iv & 0x00f0)       | ((iv & 0x00f0) >> 4),
-              ((iv & 0x000f) << 4  |  (iv & 0x000f)) / 255];
+      return [
+        /* eslint-disable indent */
+        ((iv & 0xf000) >> 8) | ((iv & 0xf000) >> 12),
+        ((iv & 0x0f00) >> 4) | ((iv & 0x0f00) >> 8),
+         (iv & 0x00f0)       | ((iv & 0x00f0) >> 4),
+        ((iv & 0x000f) << 4  |  (iv & 0x000f)) / 255,
+        /* eslint-enable indent */
+      ];
     } else if (str.length === 9) {
       // #rrggbbaa
       if (!(iv >= 0 && iv <= 0xffffffff)) return null;  // Covers NaN.
-      return [((iv & 0xff000000) >> 24) & 0xff,
-               (iv & 0x00ff0000) >> 16,
-               (iv & 0x0000ff00) >> 8,
-               (iv & 0x000000ff) / 255];
+      return [
+        /* eslint-disable indent */
+        ((iv & 0xff000000) >> 24) & 0xff,
+         (iv & 0x00ff0000) >> 16,
+         (iv & 0x0000ff00) >> 8,
+         (iv & 0x000000ff) / 255,
+        /* eslint-enable indent */
+      ];
     }
 
     return null;
   }
 
-  var op = str.indexOf('('), ep = str.indexOf(')');
+  const op = str.indexOf("("), ep = str.indexOf(")");
   if (op !== -1 && ep + 1 === str.length) {
-    var fname = str.substr(0, op);
-    var params = str.substr(op+1, ep-(op+1)).split(',');
-    var alpha = 1;  // To allow case fallthrough.
+    const fname = str.substr(0, op);
+    const params = str.substr(op+1, ep-(op+1)).split(",");
+    let alpha = 1;  // To allow case fallthrough.
+    let h, s, l, m1, m2;
     switch (fname) {
-      case 'rgba':
+      case "rgba":
         if (params.length !== 4) return null;
         alpha = parse_css_float(params.pop()!);
         // Fall through.
-      case 'rgb':
+      case "rgb":
         if (params.length !== 3) return null;
-        return [parse_css_int(params[0]),
-                parse_css_int(params[1]),
-                parse_css_int(params[2]),
-                alpha];
-      case 'hsla':
+        return [
+          parse_css_int(params[0]),
+          parse_css_int(params[1]),
+          parse_css_int(params[2]),
+          alpha,
+        ];
+      case "hsla":
         if (params.length !== 4) return null;
         alpha = parse_css_float(params.pop()!);
         // Fall through.
-      case 'hsl':
+      case "hsl":
         if (params.length !== 3) return null;
-        var h = (((parseFloat(params[0]) % 360) + 360) % 360) / 360;  // 0 .. 1
+        h = (((parseFloat(params[0]) % 360) + 360) % 360) / 360;  // 0 .. 1
         // NOTE(deanm): According to the CSS spec s/l should only be
         // percentages, but we don't bother and let float or percentage.
-        var s = parse_css_float(params[1]);
-        var l = parse_css_float(params[2]);
-        var m2 = l <= 0.5 ? l * (s + 1) : l + s - l * s;
-        var m1 = l * 2 - m2;
-        return [clamp_css_byte(css_hue_to_rgb(m1, m2, h+1/3) * 255),
-                clamp_css_byte(css_hue_to_rgb(m1, m2, h) * 255),
-                clamp_css_byte(css_hue_to_rgb(m1, m2, h-1/3) * 255),
-                alpha];
+        s = parse_css_float(params[1]);
+        l = parse_css_float(params[2]);
+        m2 = l <= 0.5 ? l * (s + 1) : l + s - l * s;
+        m1 = l * 2 - m2;
+        return [
+          clamp_css_byte(css_hue_to_rgb(m1, m2, h+1/3) * 255),
+          clamp_css_byte(css_hue_to_rgb(m1, m2, h) * 255),
+          clamp_css_byte(css_hue_to_rgb(m1, m2, h-1/3) * 255),
+          alpha,
+        ];
       default:
         return null;
     }

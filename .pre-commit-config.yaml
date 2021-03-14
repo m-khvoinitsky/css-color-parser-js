@@ -10,6 +10,15 @@ repos:
   - id: check-added-large-files
 - repo: local
   hooks:
+  - id: eslint
+    name: ESLint
+    entry: npx eslint --fix --
+    language: system
+    'types_or': [javascript, ts]
+    args: []
+    require_serial: false
+- repo: local
+  hooks:
   - id: tests
     name: Mocha tests
     language: system

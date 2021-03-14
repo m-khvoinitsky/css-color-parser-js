@@ -1,6 +1,6 @@
-import { parseCSSColor, RGBA } from '../src/csscolorparser';
-import { deepStrictEqual } from 'assert';
-import { describe, it } from 'mocha';
+import { parseCSSColor, RGBA } from "../src/csscolorparser";
+import { deepStrictEqual } from "assert";
+import { describe, it } from "mocha";
 
 const test_cases = {
   transparent: [0,0,0,0],
@@ -163,7 +163,7 @@ const test_cases = {
   whitesmoke: [245,245,245,1],
   yellow: [255,255,0,1],
   yellowgreen: [154,205,50,1],
-}
+};
 
 /*
 
@@ -414,7 +414,7 @@ const named_test_cases: Array<[string, string, RGBA | null]> = [
   ["rgb () with space before opening parenthesis", "rgb (132, 170, 73)", null],
   ["rgb() with extra garbage after", "rgb(132, 170, 73)garbage", null],
   ["rgb() with mixed percentages/numbers", "rgb(5%, 50, 30%)", null],
-  ['rgb() with an "e" where it should not be', "rgb(3e, 50, 30)", null],
+  ["rgb() with an \"e\" where it should not be", "rgb(3e, 50, 30)", null],
   ["rgb() with extra letters after values", "rgb(3blah, 50, 30)", null],
   ["rgb() with mixed commas/no commas", "rgb(50 50, 30)", null],
   ["RGB() in uppercase", "RGB(132, 170, 73)", [132, 170, 73, 1]],
@@ -742,7 +742,7 @@ const named_test_cases: Array<[string, string, RGBA | null]> = [
   ],
 ];
 
-describe('parseCSSColor', () => (
+describe("parseCSSColor", () => (
   Object.entries(test_cases).forEach(([to_parse, expected_result]): void => {
     it(
       `${to_parse} => ${expected_result}`,
@@ -751,11 +751,11 @@ describe('parseCSSColor', () => (
   })
 ));
 
-describe('parseCSSColor', () => (
+describe("parseCSSColor", () => (
   named_test_cases.forEach(([test_name, testcase, our_expected]) => {
     it(
       `${test_name} ${JSON.stringify(testcase)} => ${our_expected}`,
       () => deepStrictEqual(parseCSSColor(testcase), our_expected),
-    )
+    );
   })
-))
+));
