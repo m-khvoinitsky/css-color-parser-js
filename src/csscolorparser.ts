@@ -132,8 +132,7 @@ function css_hue_to_rgb(m1: number, m2: number, h: number): number {
 }
 
 export function parseCSSColor(css_str: string): RGBA | null {
-  // Remove all whitespace, not compliant, but should just be more accepting.
-  const str = css_str.replace(/ /g, "").toLowerCase();
+  const str = css_str.trim().toLowerCase();
 
   // Color keywords (and transparent) lookup.
   if (str in kCSSColorTable) return kCSSColorTable[str].slice() as RGBA;  // dup.
