@@ -197,6 +197,10 @@ console.log(JSON.stringify(result));
 */
 const named_test_cases: Array<[string, string, RGBA | null]> = [
   ["non-existent function", "xyza(127, 0, 0, 1)", null],
+  ["3-digit hex with different digits", "#abc", [170, 187, 204, 1]],
+  ["4-digit hex with different digits", "#abcd", [170, 187, 204, 0.8666666666666667]],
+  ["6-digit hex with different digits", "#abcdef", [171, 205, 239, 1]],
+  ["8-digit hex with different digits", "#abcdefab", [171, 205, 239, 0.6705882352941176]],
 
   // based on https://github.com/adroitwhiz/css-color/blob/master/test/test.js , thanks, @adroitwhiz!
   ["6-digit hex", "#ff0000", [255, 0, 0, 1]],

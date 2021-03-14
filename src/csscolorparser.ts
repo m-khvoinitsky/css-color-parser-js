@@ -131,62 +131,41 @@ function css_hue_to_rgb(m1: number, m2: number, h: number): number {
   return m1;
 }
 
+function parse_hex_charcode(code: number): number {
+  if (code < 48 /* "0" */) return NaN;
+  else if (code <= 57 /* "9" */) return code - 48;
+  else if (code < 97 /* "a" */) return NaN;
+  else if (code <= 102 /* "f" */) return code - 87 /* "a" - 10 */;
+  else return NaN;
+}
+
 export function parseCSSColor(css_str: string): RGBA | null {
   const str = css_str.trim().toLowerCase();
 
   // Color keywords (and transparent) lookup.
   if (str in kCSSColorTable) return kCSSColorTable[str].slice() as RGBA;  // dup.
 
-  // #abc and #abc123 syntax.
+  // #rgb, #rgba, #rrggbb, #rrggbbaa
   if (str[0] === "#") {
-    const iv = parseInt(str.substr(1), 16);  // TODO(deanm): Stricter parsing.
-    if (str.length === 4) {
-      // #rgb
-      if (!(iv >= 0 && iv <= 0xfff)) return null;  // Covers NaN.
-      return [
-        /* eslint-disable indent */
-        ((iv & 0xf00) >> 4) | ((iv & 0xf00) >> 8),
-         (iv & 0x0f0)       | ((iv & 0x0f0) >> 4),
-        ((iv & 0x00f) << 4) |  (iv & 0x00f),
-        1,
-        /* eslint-enable indent */
-      ];
-    } else if (str.length === 7) {
-      // #rrggbb
-      if (!(iv >= 0 && iv <= 0xffffff)) return null;  // Covers NaN.
-      return [
-        /* eslint-disable indent */
-        (iv & 0xff0000) >> 16,
-        (iv & 0x00ff00) >> 8,
-         iv & 0x0000ff,
-        1,
-        /* eslint-enable indent */
-      ];
-    } else if (str.length === 5) {
-      // #rgba
-      if (!(iv >= 0 && iv <= 0xffff)) return null;  // Covers NaN.
-      return [
-        /* eslint-disable indent */
-        ((iv & 0xf000) >> 8) | ((iv & 0xf000) >> 12),
-        ((iv & 0x0f00) >> 4) | ((iv & 0x0f00) >> 8),
-         (iv & 0x00f0)       | ((iv & 0x00f0) >> 4),
-        ((iv & 0x000f) << 4  |  (iv & 0x000f)) / 255,
-        /* eslint-enable indent */
-      ];
-    } else if (str.length === 9) {
-      // #rrggbbaa
-      if (!(iv >= 0 && iv <= 0xffffffff)) return null;  // Covers NaN.
-      return [
-        /* eslint-disable indent */
-        ((iv & 0xff000000) >> 24) & 0xff,
-         (iv & 0x00ff0000) >> 16,
-         (iv & 0x0000ff00) >> 8,
-         (iv & 0x000000ff) / 255,
-        /* eslint-enable indent */
-      ];
+    const is_short = str.length === 4 || str.length === 5;
+    const is_long = str.length === 7 || str.length === 9;
+    if (!is_short && !is_long) {
+      return null;
     }
-
-    return null;
+    // iterate each character for short notation and only odd for long -
+    // they need to be parsed in pairs
+    const mult = is_short ? 1 : 2;
+    const result: RGBA = [0, 0, 0, 255];
+    const until = (str.length === 5 || str.length === 9) ? 4 : 3;
+    for (let i = 0; i < until; i++) {
+      const parsed = parse_hex_charcode(str.charCodeAt(i * mult + 1));
+      result[i] = 16 * parsed + (is_short ? parsed : parse_hex_charcode(str.charCodeAt(i * mult + 2)));
+      if (Number.isNaN(result[i])) {
+        return null;
+      }
+    }
+    result[3] /= 255;
+    return result;
   }
 
   const op = str.indexOf("("), ep = str.indexOf(")");
