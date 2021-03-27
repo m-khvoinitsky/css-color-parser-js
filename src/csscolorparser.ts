@@ -172,15 +172,14 @@ export function parseCSSColor(css_str: string): RGBA | null {
   if (op !== -1 && ep + 1 === str.length) {
     const fname = str.substr(0, op);
     const params = str.substr(op+1, ep-(op+1)).split(",");
-    let alpha = 1;  // To allow case fallthrough.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const alpha = params.length === 4 ? parse_css_float(params.pop()!) : 1;
+    if (params.length !== 3) return null;
     let h, s, l, m1, m2;
+    // since CSS Color Module Level 4, browsers don't differentiate between rgb and rgba (same for hsl), only consider actual values
     switch (fname) {
       case "rgba":
-        if (params.length !== 4) return null;
-        alpha = parse_css_float(params.pop()!);
-        // Fall through.
       case "rgb":
-        if (params.length !== 3) return null;
         return [
           parse_css_int(params[0]),
           parse_css_int(params[1]),
@@ -188,11 +187,7 @@ export function parseCSSColor(css_str: string): RGBA | null {
           alpha,
         ];
       case "hsla":
-        if (params.length !== 4) return null;
-        alpha = parse_css_float(params.pop()!);
-        // Fall through.
       case "hsl":
-        if (params.length !== 3) return null;
         h = (((parseFloat(params[0]) % 360) + 360) % 360) / 360;  // 0 .. 1
         // NOTE(deanm): According to the CSS spec s/l should only be
         // percentages, but we don't bother and let float or percentage.
