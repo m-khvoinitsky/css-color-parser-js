@@ -72,10 +72,10 @@ parseCSSColor('rgb(50, 50a, 50)');
 
 # Credits
 
-Dean McNamee, author of the original csscolorparser library ([Github](https://github.com/deanm/css-color-parser-js), [NPM](https://www.npmjs.com/package/csscolorparser)) which this library is forked from.
-
-adroitwhiz, for excellent testcases for CSS color parsers ([Github](https://github.com/adroitwhiz/css-color/blob/master/test/test.js)).
+- Dean McNamee, author of the original csscolorparser library ([GitHub](https://github.com/deanm/css-color-parser-js), [NPM](https://www.npmjs.com/package/csscolorparser)) which this library is forked from.
+- adroitwhiz, for excellent testcases for CSS color parsers ([GitHub](https://github.com/adroitwhiz/css-color/blob/master/test/test.js)).
 
 # Links
 
-[Github](https://github.com/m-khvoinitsky/csscolorparser-ts)
+- [GitHub](https://github.com/m-khvoinitsky/csscolorparser-ts)
+- [NPM](https://www.npmjs.com/package/csscolorparser-ts)
