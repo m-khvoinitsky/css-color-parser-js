@@ -21,10 +21,11 @@
     "url": "https://github.com/m-khvoinitsky/css-color-parser-ts"
   },
   "license": "MIT",
-  "main": "dist/csscolorparser.js",
+  "main": "dist/cjs/csscolorparser.js",
+  "module": "dist/esm/csscolorparser.js",
   "types": "dist/csscolorparser.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "rm -r dist/* && tsc --outDir dist/esm --module ES6 && tsc --outDir dist/cjs --module CommonJS && mv dist/esm/csscolorparser.d.ts dist/ && rm dist/cjs/csscolorparser.d.ts",
     "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' nyc --check-coverage --branches 100 --functions 100 --lines 100 --statements 100 --reporter=html --reporter=lcov --reporter=text mocha"
   },
   "devDependencies": {
