@@ -139,6 +139,20 @@ function parse_hex_charcode(code: number): number {
   else return NaN;
 }
 
+function rotation_to_degrees(s: string): number {
+  if (s.endsWith("deg")) {
+    return Number(s.slice(0, -3));
+  } else if (s.endsWith("grad")) {
+    return Number(s.slice(0, -4)) * 360 / 400;
+  } else if (s.endsWith("rad")) {
+    return Number(s.slice(0, -3)) * 360 / (2 * Math.PI);
+  } else if (s.endsWith("turn")) {
+    return Number(s.slice(0, -4)) * 360;
+  } else {
+    return Number(s);
+  }
+}
+
 export function parseCSSColor(css_str: string): RGBA | null {
   const str = css_str.trim().toLowerCase();
 
@@ -187,11 +201,14 @@ export function parseCSSColor(css_str: string): RGBA | null {
         return result;
       case "hsla":
       case "hsl":
-        h = (((parseFloat(params[0]) % 360) + 360) % 360) / 360;  // 0 .. 1
+        h = (((rotation_to_degrees(params[0]) % 360) + 360) % 360) / 360;  // 0 .. 1
+        if (Number.isNaN(h)) return null;
         // NOTE(deanm): According to the CSS spec s/l should only be
         // percentages, but we don't bother and let float or percentage.
         s = parse_css_float(params[1]);
+        if (Number.isNaN(s)) return null;
         l = parse_css_float(params[2]);
+        if (Number.isNaN(l)) return null;
         m2 = l <= 0.5 ? l * (s + 1) : l + s - l * s;
         m1 = l * 2 - m2;
         return [
