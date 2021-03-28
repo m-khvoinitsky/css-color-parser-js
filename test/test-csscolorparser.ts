@@ -779,3 +779,12 @@ describe("parseCSSColor", () => (
     );
   })
 ));
+
+describe("Ensure that various modifications of returned values won't affect future parsing", () => {
+  it("Modifying returned values from parseCSSColor don't affect future parsing", () => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const red = parseCSSColor("red")!;
+    red.push(2);
+    deepStrictEqual(parseCSSColor("red"), [255, 0, 0, 1]);
+  });
+});
