@@ -115,10 +115,13 @@ function parse_css_int(str: string): number {  // int or percentage.
   return clamp_css_byte(Number(str));
 }
 
+function parse_css_percentage(str: string): number | null {
+  if (str[str.length - 1] !== "%") return null;
+  return clamp_css_float(Number(str.slice(0, -1)) / 100);
+}
+
 function parse_css_float(str: string): number {  // float or percentage.
-  if (str[str.length - 1] === "%")
-    return clamp_css_float(Number(str.slice(0, -1)) / 100);
-  return clamp_css_float(Number(str));
+  return parse_css_percentage(str) ?? clamp_css_float(Number(str));
 }
 
 function css_hue_to_rgb(m1: number, m2: number, h: number): number {
@@ -218,12 +221,10 @@ export function parseCSSColor(css_str: string): RGBA | null {
       case "hsl":
         h = (((rotation_to_degrees(params[0]) % 360) + 360) % 360) / 360;  // 0 .. 1
         if (Number.isNaN(h)) return null;
-        // NOTE(deanm): According to the CSS spec s/l should only be
-        // percentages, but we don't bother and let float or percentage.
-        s = parse_css_float(params[1]);
-        if (Number.isNaN(s)) return null;
-        l = parse_css_float(params[2]);
-        if (Number.isNaN(l)) return null;
+        s = parse_css_percentage(params[1]);
+        if (Number.isNaN(s) || s === null) return null;
+        l = parse_css_percentage(params[2]);
+        if (Number.isNaN(l) || l === null) return null;
         m2 = l <= 0.5 ? l * (s + 1) : l + s - l * s;
         m1 = l * 2 - m2;
         return [
