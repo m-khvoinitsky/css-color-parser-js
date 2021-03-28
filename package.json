@@ -25,7 +25,7 @@
   "types": "dist/csscolorparser.d.ts",
   "scripts": {
     "build": "tsc",
-    "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' nyc --check-coverage mocha"
+    "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' nyc --check-coverage --branches 100 --functions 100 --lines 100 --statements 100 --reporter=html --reporter=lcov --reporter=text mocha"
   },
   "devDependencies": {
     "@types/assert": "^1.5.4",

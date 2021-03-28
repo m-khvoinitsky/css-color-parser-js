@@ -201,6 +201,17 @@ const named_test_cases: Array<[string, string, RGBA | null]> = [
   ["4-digit hex with different digits", "#abcd", [170, 187, 204, 0.8666666666666667]],
   ["6-digit hex with different digits", "#abcdef", [171, 205, 239, 1]],
   ["8-digit hex with different digits", "#abcdefab", [171, 205, 239, 0.6705882352941176]],
+  ["invalid 3-digit hex, range 1", "#a?b", null],
+  ["invalid 3-digit hex, range 2", "#a/b", null],
+  ["invalid hsl() S is invalid 1", "hsl(50, 80a%, 35%)", null],
+  ["invalid hsl() L is invalid 1", "hsl(50, 80%, 35a%)", null],
+  ["invalid hsl() S is invalid 2", "hsl(50, 0.8, 35%)", null],
+  ["invalid hsl() L is invalid 2", "hsl(50, 80%, 0.35)", null],
+  ["some valid hsl()", "hsl(50, 80%, 85%)", [247, 237, 186, 1]],
+  ["some valid hsl() with bigger H", "hsl(350, 80%, 85%)", [247, 186, 196, 1]],
+  ["some valid hsl() with negative S", "hsl(350, -80%, 85%)", [217, 217, 217, 1]],
+  ["some valid hsl() with negative L", "hsl(350, 80%, -85%)", [0, 0, 0, 1]],
+  ["some valid hsl() with more-than-100% L", "hsl(350, 80%, 185%)", [255, 255, 255, 1]],
 
   // based on https://github.com/adroitwhiz/css-color/blob/master/test/test.js , thanks, @adroitwhiz!
   ["6-digit hex", "#ff0000", [255, 0, 0, 1]],
