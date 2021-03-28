@@ -1,6 +1,6 @@
 {
   "name": "csscolorparser-ts",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "author": "Dean McNamee <dean@gmail.com>",
   "contributors": [
     "Mikhail Khvoinitsky <me@khvoinitsky.org>",
@@ -24,7 +24,11 @@
   "main": "dist/cjs/csscolorparser.js",
   "module": "dist/esm/csscolorparser.js",
   "types": "dist/csscolorparser.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
+    "release": "git diff-index --quiet HEAD && npm test && npm run build && npm publish",
     "build": "rm -r dist/* && tsc --outDir dist/esm --module ES6 && tsc --outDir dist/cjs --module CommonJS && mv dist/esm/csscolorparser.d.ts dist/ && rm dist/cjs/csscolorparser.d.ts",
     "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' nyc --check-coverage --branches 100 --functions 100 --lines 100 --statements 100 --reporter=html --reporter=lcov --reporter=text mocha"
   },
