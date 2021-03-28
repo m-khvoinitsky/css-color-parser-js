@@ -168,8 +168,10 @@ export function parseCSSColor(css_str: string): RGBA | null {
     return result;
   }
 
-  const op = str.indexOf("("), ep = str.indexOf(")");
-  if (op !== -1 && ep + 1 === str.length) {
+  const op = str.indexOf("(");
+  let ep = str.indexOf(")");
+  if (ep === -1) ep = str.length; // browsers seems to accept such shit
+  if (op !== -1 && ( ep + 1 === str.length || ep === str.length)) {
     const fname = str.substr(0, op);
     const params = str.substr(op+1, ep-(op+1)).split(",");
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
