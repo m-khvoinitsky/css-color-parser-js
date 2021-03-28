@@ -111,14 +111,14 @@ function clamp_css_float(f: number): number {  // Clamp to float 0.0 .. 1.0.
 
 function parse_css_int(str: string): number {  // int or percentage.
   if (str[str.length - 1] === "%")
-    return clamp_css_byte(parseFloat(str) / 100 * 255);
-  return clamp_css_byte(parseInt(str));
+    return clamp_css_byte(Number(str.slice(0, -1)) / 100 * 255);
+  return clamp_css_byte(Number(str));
 }
 
 function parse_css_float(str: string): number {  // float or percentage.
   if (str[str.length - 1] === "%")
-    return clamp_css_float(parseFloat(str) / 100);
-  return clamp_css_float(parseFloat(str));
+    return clamp_css_float(Number(str.slice(0, -1)) / 100);
+  return clamp_css_float(Number(str));
 }
 
 function css_hue_to_rgb(m1: number, m2: number, h: number): number {
