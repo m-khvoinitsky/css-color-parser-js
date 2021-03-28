@@ -177,17 +177,14 @@ export function parseCSSColor(css_str: string): RGBA | null {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const alpha = params.length === 4 ? parse_css_float(params.pop()!) : 1;
     if (params.length !== 3) return null;
-    let h, s, l, m1, m2;
+    let h, s, l, m1, m2, result: RGBA;
     // since CSS Color Module Level 4, browsers don't differentiate between rgb and rgba (same for hsl), only consider actual values
     switch (fname) {
       case "rgba":
       case "rgb":
-        return [
-          parse_css_int(params[0]),
-          parse_css_int(params[1]),
-          parse_css_int(params[2]),
-          alpha,
-        ];
+        result = [...params.map(parse_css_int), alpha] as RGBA;
+        if (result.some(Number.isNaN)) return null;
+        return result;
       case "hsla":
       case "hsl":
         h = (((parseFloat(params[0]) % 360) + 360) % 360) / 360;  // 0 .. 1
