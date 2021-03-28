@@ -139,6 +139,8 @@ function parse_hex_charcode(code: number): number {
   else return NaN;
 }
 
+const separators = new Set([" ", "\t", "\n", "\r", ",", "/"]);
+
 function rotation_to_degrees(s: string): number {
   if (s.endsWith("deg")) {
     return Number(s.slice(0, -3));
@@ -187,7 +189,20 @@ export function parseCSSColor(css_str: string): RGBA | null {
   if (ep === -1) ep = str.length; // browsers seems to accept such shit
   if (op !== -1 && ( ep + 1 === str.length || ep === str.length)) {
     const fname = str.substr(0, op);
-    const params = str.substr(op+1, ep-(op+1)).split(",");
+    const params = [];
+    let buf = "";
+    for (let i = op + 1; i < ep; i++) {
+      if (separators.has(str[i])) {
+        if (buf.length !== 0) {
+          params.push(buf);
+          buf = "";
+        }
+      } else {
+        buf += str[i];
+      }
+    }
+    if (buf.length !== 0) params.push(buf);
+
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const alpha = params.length === 4 ? parse_css_float(params.pop()!) : 1;
     if (params.length !== 3) return null;
