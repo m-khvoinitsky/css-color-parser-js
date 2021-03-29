@@ -1,6 +1,6 @@
 {
   "name": "csscolorparser-ts",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": "Dean McNamee <dean@gmail.com>",
   "contributors": [
     "Mikhail Khvoinitsky <me@khvoinitsky.org>",
@@ -18,7 +18,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/m-khvoinitsky/css-color-parser-ts"
+    "url": "https://github.com/m-khvoinitsky/csscolorparser-ts"
   },
   "license": "MIT",
   "main": "dist/cjs/csscolorparser.js",
